@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 3.5)
 project (wotreplay-parser)
 
 set(Boost_USE_MULTITHREADED     ON)
@@ -13,9 +13,9 @@ set(CMAKE_INCLUDE_CURRENT_DIR   ON)
 
 if(USE_BOOST_REGEX STREQUAL 1)
   add_definitions(-DUSE_BOOST_REGEX)
-  find_package(Boost 1.50.0 COMPONENTS filesystem program_options system regex REQUIRED)
+  find_package(Boost 1.82 COMPONENTS filesystem program_options system iterator format multi_array range variant algorithm spirit regex REQUIRED)
 else()
-  find_package(Boost 1.50.0 COMPONENTS filesystem program_options system REQUIRED)
+  find_package(Boost 1.82 COMPONENTS filesystem program_options system iterator format multi_array range variant algorithm spirit REQUIRED)
 endif()
 
 find_package(PNG REQUIRED)
@@ -23,7 +23,9 @@ find_package(ZLIB REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(TBB)
 find_package(Qt5Widgets)
-find_package(GD)
+find_package(PkgConfig)
+pkg_check_modules(LIBGD REQUIRED IMPORTED_TARGET gdlib)
+# find_package(GD REQUIRED)
 find_package(Git)
 
 
@@ -37,7 +39,7 @@ if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
 	add_definitions(-D__func__=__FUNCTION__)
 	add_definitions(-D__TBB_NO_IMPLICIT_LINKAGE)
 	add_definitions(-Dchdir=_chdir)
-	set(CMAKE_GENERATOR_TOOLSET "v140" CACHE STRING "Platform Toolset" FORCE) 
+	# set(CMAKE_GENERATOR_TOOLSET "v140" CACHE STRING "Platform Toolset" FORCE) 
 else()
 	set (CMAKE_CXX_FLAGS "-Os -std=c++11")
 endif()
@@ -140,8 +142,11 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/version.cpp.in" "${CMAKE_CURRENT
 
 add_executable(wotreplay-parser src/main.cpp "${CMAKE_CURRENT_SOURCE_DIR}/src/version.cpp" src/version.h)
 
-target_link_libraries( wotreplay ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} ${PNG_LIBRARIES} ${ZLIB_LIBRARIES} ${TBB_LIBRARIES} ${GD_LIBRARY})
-target_link_libraries( wotreplay-parser ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} ${PNG_LIBRARIES} ${ZLIB_LIBRARIES} ${TBB_LIBRARIES} ${GD_LIBRARY} wotreplay jsoncpp)
+# target_link_libraries( wotreplay ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} ${PNG_LIBRARIES} ${ZLIB_LIBRARIES} ${TBB_LIBRARIES} ${GD_LIBRARY})
+# target_link_libraries( wotreplay-parser ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} ${PNG_LIBRARIES} ${ZLIB_LIBRARIES} ${TBB_LIBRARIES} ${GD_LIBRARY} wotreplay jsoncpp)
+target_link_libraries( wotreplay ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} ${PNG_LIBRARIES} ${ZLIB_LIBRARIES} ${TBB_LIBRARIES} PkgConfig::LIBGD)
+target_link_libraries( wotreplay-parser ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} ${PNG_LIBRARIES} ${ZLIB_LIBRARIES} ${TBB_LIBRARIES} PkgConfig::LIBGD wotreplay jsoncpp)
+
 
 if(Qt5Widgets_FOUND)
 	add_library(wotreplay-gui-widgets src/mainwindow.h
@@ -160,5 +165,7 @@ if(Qt5Widgets_FOUND)
 
 	qt5_use_modules(wotreplay-gui Core Gui Widgets)
 
-	target_link_libraries( wotreplay-gui ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} ${PNG_LIBRARIES} ${ZLIB_LIBRARIES} ${TBB_LIBRARIES} ${GD_LIBRARY} wotreplay-gui-widgets wotreplay jsoncpp Qt5::Widgets)
+	# target_link_libraries( wotreplay-gui ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} ${PNG_LIBRARIES} ${ZLIB_LIBRARIES} ${TBB_LIBRARIES} ${GD_LIBRARY} wotreplay-gui-widgets wotreplay jsoncpp Qt5::Widgets)
+	target_link_libraries( wotreplay-gui ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} ${PNG_LIBRARIES} ${ZLIB_LIBRARIES} ${TBB_LIBRARIES} PkgConfig::LIBGD wotreplay-gui-widgets wotreplay jsoncpp Qt5::Widgets)
+
 endif()

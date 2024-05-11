@@ -1,0 +1,35 @@
+{
+    "cmake.generator": "Ninja",  // Visual Studio 17 2022, Ninja "cmake.generator": "Ninja",  // Visual Studio 17 2022, Ninja
+    "cmake.outputLogEncoding": "utf8",
+    "cmake.configureArgs": [
+        "-DCMAKE_TOOLCHAIN_FILE=C:/dev/vcpkg/scripts/buildsystems/vcpkg.cmake",
+        "-DCMAKE_FIND_USE_CMAKE_SYSTEM_PATH=FALSE",
+        "-DCMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH=FALSE",
+        "-DCMAKE_FIND_USE_CMAKE_PATH=TRUE",
+        "-DVCPKG_TARGET_TRIPLET=x64-windows",
+        // "--debug-find-pkg=ZLIB,MathGL2",
+        // "--debug-find"
+    ],
+    "workbench.colorTheme": "Default Dark Modern",
+    "terminal.integrated.shellIntegration.history": 100000,
+    "terminal.integrated.profiles.windows": {
+
+        "PowerShell": {
+            "source": "PowerShell",
+            "icon": "terminal-powershell",
+            "args": ["-NoExit", "chcp 65001"]
+        },
+        "Command Prompt": {
+            "path": [
+                "${env:windir}\\Sysnative\\cmd.exe",
+                "${env:windir}\\System32\\cmd.exe"
+            ],
+            "args": ["/K", "chcp 65001"],
+            "icon": "terminal-cmd"
+        },
+        "Git Bash": {
+            "source": "Git Bash"
+        }
+    },
+    "editor.fontSize": 16
+}
